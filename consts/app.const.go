@@ -7,11 +7,13 @@ const (
 
 const (
 	SECURITY_TYPE = "STOCK"
+	ASSET_CLASS   = "EQUITY"
 	DATA_SOURCE   = "TIP_RANK"
 )
 
 // TipRank available countries
-var TipRankCountries = []string{"Canada", "US", "UK"}
+// var TipRankCountries = []string{"Canada", "US", "UK"}
+var TipRankCountries = []string{"Canada"}
 
 /*
 Bellow is the list of sector get from tiprank by inspect html page
@@ -94,5 +96,19 @@ var Countries = map[string]struct {
 		NumberCode: 826,
 		Latitude:   54,
 		Longitude:  -2,
+	},
+}
+
+var Currencies = map[string]struct {
+	Code string
+}{
+	"Canada": {
+		Code: "CAD",
+	},
+	"US": {
+		Code: "USD",
+	},
+	"UK": {
+		Code: "GBP",
 	},
 }

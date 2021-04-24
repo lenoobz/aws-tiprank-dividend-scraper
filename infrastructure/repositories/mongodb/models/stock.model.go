@@ -11,18 +11,24 @@ import (
 )
 
 type StockModel struct {
-	ID              *primitive.ObjectID      `bson:"_id,omitempty"`
-	IsActive        bool                     `bson:"isActive,omitempty"`
-	CreatedAt       int64                    `bson:"createdAt,omitempty"`
-	ModifiedAt      int64                    `bson:"modifiedAt,omitempty"`
-	Schema          string                   `bson:"schema,omitempty"`
-	Source          string                   `bson:"source,omitempty"`
-	Ticker          string                   `bson:"ticker,omitempty"`
-	Name            string                   `bson:"name,omitempty"`
-	Type            string                   `bson:"type,omitempty"`
-	Sectors         []*SectorModel           `bson:"sector,omitempty"`
-	Countries       []*CountryModel          `bson:"countries,omitempty"`
-	DividendHistory map[int64]*DividendModel `bson:"dividendHistory,omitempty"`
+	ID               *primitive.ObjectID      `bson:"_id,omitempty"`
+	IsActive         bool                     `bson:"isActive,omitempty"`
+	CreatedAt        int64                    `bson:"createdAt,omitempty"`
+	ModifiedAt       int64                    `bson:"modifiedAt,omitempty"`
+	Schema           string                   `bson:"schema,omitempty"`
+	Source           string                   `bson:"source,omitempty"`
+	Ticker           string                   `bson:"ticker,omitempty"`
+	Name             string                   `bson:"name,omitempty"`
+	Type             string                   `bson:"type,omitempty"`
+	AssetClass       string                   `bson:"assetClass,omitempty"`
+	DividendSchedule string                   `bson:"dividendSchedule,omitempty"`
+	Currency         string                   `bson:"currency,omitempty"`
+	AllocationStock  float64                  `bson:"allocationStock,omitempty"`
+	AllocationBond   float64                  `bson:"allocationBond,omitempty"`
+	AllocationCash   float64                  `bson:"allocationCash,omitempty"`
+	Sectors          []*SectorModel           `bson:"sector,omitempty"`
+	Countries        []*CountryModel          `bson:"countries,omitempty"`
+	DividendHistory  map[int64]*DividendModel `bson:"dividendHistory,omitempty"`
 }
 
 // DividendModel struct
@@ -60,30 +66,17 @@ func NewStockModel(e *entities.Stock, countryCode string) (*StockModel, error) {
 
 	m.Ticker = e.Ticker
 
-	// if e.Ticker != "" {
-	// 	strs := strings.Split(e.Ticker, ":")
-	// 	if len(strs) < 2 {
-	// 		m.Ticker = e.Ticker
-	// 	} else {
-	// 		if countryCode == "Canada" {
-	// 			// Some special ticker in Canada
-	// 			// TODO: need to find a better way to handle special ticker
-	// 			if strings.EqualFold(strs[1], "SJR.A") {
-	// 				m.Ticker = "SJR-A.V"
-	// 			} else {
-	// 				m.Ticker = fmt.Sprintf("%s.TO", strings.Replace(strs[1], ".", "-", -1))
-	// 			}
-	// 		} else if countryCode == "UK" {
-	// 			m.Ticker = fmt.Sprintf("%s.L", strs[1])
-	// 		} else {
-	// 			m.Ticker = strs[1]
-	// 		}
-	// 	}
-	// }
-
 	if e.Name != "" {
 		m.Name = e.Name
 	}
+
+	m.AssetClass = consts.ASSET_CLASS
+
+	if v, f := consts.Currencies[countryCode]; f {
+		m.Currency = v.Code
+	}
+
+	m.AllocationStock = 100
 
 	d, err := newDividendModel(e)
 	if err != nil {
