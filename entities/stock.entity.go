@@ -3,7 +3,7 @@ package entities
 // Stock represents a stock entity
 type Stock struct {
 	Ticker         string  `json:"ticker,omitempty"`
-	Name           string  `json:"name,omitempty"`
+	Name           string  `json:"company,omitempty"`
 	Sector         int64   `json:"sector,omitempty"`
 	PayoutRatio    float64 `json:"payoutRatio,omitempty"`
 	Yield          float64 `json:"yield,omitempty"`
