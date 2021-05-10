@@ -61,7 +61,7 @@ func newScraperJob() *colly.Collector {
 // configJobs configs on error handler and on response handler for scaper jobs
 func (s *StockScraper) configJobs() {
 	s.StockJob.OnError(s.errorHandler)
-	s.StockJob.OnResponse(s.processFundListResponse)
+	s.StockJob.OnResponse(s.processDividendResponse)
 }
 
 // StartSingleDayJob start job
@@ -192,7 +192,7 @@ func (s *StockScraper) StartDailyJob() {
 }
 
 ///////////////////////////////////////////////////////////
-// Fund List Scraper
+// Scraper Handler
 ///////////////////////////////////////////////////////////
 
 // errorHandler generic error handler for all scaper jobs
@@ -201,7 +201,7 @@ func (s *StockScraper) errorHandler(r *colly.Response, err error) {
 	s.log.Error(ctx, "failed to request url", "url", r.Request.URL, "error", err)
 }
 
-func (s *StockScraper) processFundListResponse(r *colly.Response) {
+func (s *StockScraper) processDividendResponse(r *colly.Response) {
 	// create correlation if for processing fund list
 	id, _ := uuid.NewRandom()
 	ctx := corid.NewContext(context.Background(), id)

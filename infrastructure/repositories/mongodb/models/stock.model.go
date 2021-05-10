@@ -7,6 +7,7 @@ import (
 	"github.com/hthl85/aws-tiprank-dividend-scraper/consts"
 	"github.com/hthl85/aws-tiprank-dividend-scraper/entities"
 	"github.com/hthl85/aws-tiprank-dividend-scraper/utils/datetime"
+	"github.com/hthl85/aws-tiprank-dividend-scraper/utils/ticker"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -64,7 +65,7 @@ func NewStockModel(e *entities.Stock, countryCode string) (*StockModel, error) {
 	m.Source = consts.DATA_SOURCE
 	m.Type = consts.SECURITY_TYPE
 
-	m.Ticker = e.Ticker
+	m.Ticker = ticker.GetYahooTicker(e.Ticker)
 
 	if e.Name != "" {
 		m.Name = e.Name
