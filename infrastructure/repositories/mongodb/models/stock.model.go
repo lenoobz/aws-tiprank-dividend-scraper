@@ -7,7 +7,6 @@ import (
 	"github.com/hthl85/aws-tiprank-dividend-scraper/consts"
 	"github.com/hthl85/aws-tiprank-dividend-scraper/entities"
 	"github.com/hthl85/aws-tiprank-dividend-scraper/utils/datetime"
-	"github.com/hthl85/aws-tiprank-dividend-scraper/utils/ticker"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -65,7 +64,7 @@ func NewStockModel(e *entities.Stock, countryCode string) (*StockModel, error) {
 	m.Source = consts.DATA_SOURCE
 	m.Type = consts.SECURITY_TYPE
 
-	m.Ticker = ticker.GetYahooTicker(e.Ticker)
+	m.Ticker = e.Ticker
 
 	if e.Name != "" {
 		m.Name = e.Name
@@ -103,17 +102,17 @@ func NewStockModel(e *entities.Stock, countryCode string) (*StockModel, error) {
 
 // newDividendModel create dividend model
 func newDividendModel(e *entities.Stock) (*DividendModel, error) {
-	exDividendDate, err := datetime.GetDateStartFromString(e.ExDividendDate)
+	exDividendDate, err := datetime.GetStarDateFromString(e.ExDividendDate)
 	if err != nil {
 		return nil, &DividendModelError{Message: fmt.Sprintf("parse exDividendDate failed : %v", err)}
 	}
 
-	recordDate, err := datetime.GetDateStartFromString(e.RecordDate)
+	recordDate, err := datetime.GetStarDateFromString(e.RecordDate)
 	if err != nil {
 		return nil, &DividendModelError{Message: fmt.Sprintf("parse recordDate failed : %v", err)}
 	}
 
-	dividendDate, err := datetime.GetDateStartFromString(e.DividendDate)
+	dividendDate, err := datetime.GetStarDateFromString(e.DividendDate)
 	if err != nil {
 		return nil, &DividendModelError{Message: fmt.Sprintf("parse dividendDate failed : %v", err)}
 	}

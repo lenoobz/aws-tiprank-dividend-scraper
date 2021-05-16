@@ -2,7 +2,7 @@ package consts
 
 // Collection names
 const (
-	TIPRANK_STOCK_COL = "stock" // Should match with Colnames's key of AppConf
+	TIPRANK_DIVIDEND_LIST_COLLECTION = "tiprank_dividend_list" // Should match with Colnames's key of AppConf
 )
 
 const (

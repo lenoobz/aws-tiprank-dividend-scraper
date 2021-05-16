@@ -153,7 +153,7 @@ func (r *StockMongo) insertStock(ctx context.Context, m *models.StockModel) erro
 	}
 
 	// what collection we are going to use
-	colname, ok := r.conf.Colnames[consts.TIPRANK_STOCK_COL]
+	colname, ok := r.conf.Colnames[consts.TIPRANK_DIVIDEND_LIST_COLLECTION]
 	if !ok {
 		r.log.Error(ctx, "cannot find collection name")
 		return fmt.Errorf("cannot find collection name")
@@ -197,7 +197,7 @@ func (r *StockMongo) insertStock(ctx context.Context, m *models.StockModel) erro
 // findStockByTicker finds stock of a given ticker
 func (r *StockMongo) findStockByTicker(ctx context.Context, ticker string) (*models.StockModel, error) {
 	// what collection we are going to use
-	colname, ok := r.conf.Colnames[consts.TIPRANK_STOCK_COL]
+	colname, ok := r.conf.Colnames[consts.TIPRANK_DIVIDEND_LIST_COLLECTION]
 	if !ok {
 		r.log.Error(ctx, "cannot find collection name")
 		return nil, fmt.Errorf("cannot find collection name")

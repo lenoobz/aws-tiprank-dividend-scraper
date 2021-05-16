@@ -15,7 +15,7 @@ var AppConf = AppConfig{
 		Dbname:        "etf_funds_dev",
 		SchemaVersion: "1",
 		Colnames: map[string]string{
-			"stock": "securities",
+			"tiprank_dividend_list": "tiprank_dividend_list",
 		},
 	},
 }
