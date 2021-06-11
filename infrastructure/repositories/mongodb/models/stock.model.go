@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/hthl85/aws-tiprank-dividend-scraper/consts"
 	"github.com/hthl85/aws-tiprank-dividend-scraper/entities"
 	"github.com/hthl85/aws-tiprank-dividend-scraper/utils/datetime"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -16,15 +15,14 @@ type StockModel struct {
 	CreatedAt       int64                    `bson:"createdAt,omitempty"`
 	ModifiedAt      int64                    `bson:"modifiedAt,omitempty"`
 	Schema          string                   `bson:"schema,omitempty"`
-	Source          string                   `bson:"source,omitempty"`
 	Ticker          string                   `bson:"ticker,omitempty"`
 	Name            string                   `bson:"name,omitempty"`
+	Yield           float64                  `bson:"yield,omitempty"`
 	DividendHistory map[int64]*DividendModel `bson:"dividendHistory,omitempty"`
 }
 
 // DividendModel struct
 type DividendModel struct {
-	Yield          float64    `bson:"yield,omitempty"`
 	Dividend       float64    `bson:"dividend,omitempty"`
 	ExDividendDate *time.Time `bson:"exDividendDate,omitempty"`
 	RecordDate     *time.Time `bson:"recordDate,omitempty"`
@@ -35,12 +33,13 @@ type DividendModel struct {
 func NewStockModel(e *entities.Stock, countryCode string) (*StockModel, error) {
 	var m = &StockModel{}
 
-	m.Source = consts.DATA_SOURCE
 	m.Ticker = e.Ticker
 
 	if e.Name != "" {
 		m.Name = e.Name
 	}
+
+	m.Yield = e.Yield
 
 	d, err := newDividendModel(e)
 	if err != nil {
@@ -72,9 +71,7 @@ func newDividendModel(e *entities.Stock) (*DividendModel, error) {
 	}
 
 	m := &DividendModel{
-		// PayoutRatio:    e.PayoutRatio,
-		Yield:          e.Yield,
-		Dividend:       e.Dividend,
+		Dividend:       e.Amount,
 		ExDividendDate: exDividendDate,
 		RecordDate:     recordDate,
 		DividendDate:   dividendDate,

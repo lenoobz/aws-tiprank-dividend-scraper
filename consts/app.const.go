@@ -5,12 +5,6 @@ const (
 	TIPRANK_DIVIDEND_LIST_COLLECTION = "tiprank_dividend_list" // Should match with Colnames's key of AppConf
 )
 
-const (
-	SECURITY_TYPE = "STOCK"
-	ASSET_CLASS   = "EQUITY"
-	DATA_SOURCE   = "TIP_RANK"
-)
-
 // TipRank available countries
 // var TipRankCountries = []string{"Canada", "US", "UK"}
 var TipRankCountries = []string{"Canada"}
