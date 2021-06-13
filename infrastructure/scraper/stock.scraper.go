@@ -21,6 +21,7 @@ type StockScraper struct {
 	StockJob     *colly.Collector
 	stockService *stock.Service
 	log          logger.ContextLog
+	tickers      []string
 }
 
 // NewStockScraper create new stock scraper
@@ -220,6 +221,14 @@ func (s *StockScraper) processDividendResponse(r *colly.Response) {
 	for _, stock := range stocks {
 		if err := s.stockService.AddStock(ctx, stock, countryCode); err != nil {
 			s.log.Error(ctx, "add dividend stock failed", "error", err, "ticker", stock.Ticker)
+		} else {
+			s.tickers = append(s.tickers, stock.Ticker)
 		}
 	}
+}
+
+// Close scraper
+func (s *StockScraper) Close() []string {
+	s.log.Info(context.Background(), "DONE - SCRAPING STOCKS", "tickers", s.tickers)
+	return s.tickers
 }

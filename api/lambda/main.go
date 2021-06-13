@@ -13,6 +13,12 @@ import (
 )
 
 func main() {
+	lambda.Start(lambdaHandler)
+}
+
+func lambdaHandler(ctx context.Context) ([]string, error) {
+	log.Println("lambda handler is called")
+
 	appConf := config.AppConf
 
 	// create new logger
@@ -36,11 +42,10 @@ func main() {
 	jobs := scraper.NewStockScraper(fs, zap)
 	jobs.StartDailyJob()
 
-	lambda.Start(lambdaHandler)
-}
+	var tickers []string
+	defer func() {
+		tickers = jobs.Close()
+	}()
 
-func lambdaHandler(ctx context.Context) ([]string, error) {
-	log.Println("lambda handler is called")
-
-	return []string{"TSE:LGT.A", "TSE:LGT.B"}, nil
+	return tickers, nil
 }
