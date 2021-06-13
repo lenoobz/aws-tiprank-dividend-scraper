@@ -43,10 +43,6 @@ func lambdaHandler(ctx context.Context) ([]string, error) {
 	// jobs.StartDailyJob()
 	jobs.StartNextWeekJob()
 
-	var tickers []string
-	defer func() {
-		tickers = jobs.Close()
-	}()
-
+	tickers := jobs.Close()
 	return tickers, nil
 }
