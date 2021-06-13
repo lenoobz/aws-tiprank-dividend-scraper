@@ -40,7 +40,8 @@ func lambdaHandler(ctx context.Context) ([]string, error) {
 
 	// create new scraper jobs
 	jobs := scraper.NewStockScraper(fs, zap)
-	jobs.StartDailyJob()
+	// jobs.StartDailyJob()
+	jobs.StartNextWeekJob()
 
 	var tickers []string
 	defer func() {
