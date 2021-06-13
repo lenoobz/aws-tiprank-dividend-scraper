@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 
 	"github.com/aws/aws-lambda-go/lambda"
@@ -10,6 +11,11 @@ import (
 	"github.com/hthl85/aws-tiprank-dividend-scraper/infrastructure/scraper"
 	"github.com/hthl85/aws-tiprank-dividend-scraper/usecase/stock"
 )
+
+// OutEvent defines your lambda output data structure,
+type OutEvent struct {
+	Tickers []string `json:"tickers"`
+}
 
 func main() {
 	appConf := config.AppConf
@@ -38,6 +44,10 @@ func main() {
 	lambda.Start(lambdaHandler)
 }
 
-func lambdaHandler() {
+func lambdaHandler(ctx context.Context) (OutEvent, error) {
 	log.Println("lambda handler is called")
+
+	return OutEvent{
+		Tickers: []string{"TSE:LGT.A", "TSE:LGT.B"},
+	}, nil
 }
