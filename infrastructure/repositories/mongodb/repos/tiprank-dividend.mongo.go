@@ -2,7 +2,6 @@ package repos
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -17,20 +16,20 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// StockMongo struct
-type StockMongo struct {
+// TipRankDividendMongo struct
+type TipRankDividendMongo struct {
 	db     *mongo.Database
 	client *mongo.Client
 	log    logger.ContextLog
 	conf   *config.MongoConfig
 }
 
-// NewStockMongo creates new stock mongo repo
-func NewStockMongo(db *mongo.Database, l logger.ContextLog, conf *config.MongoConfig) (*StockMongo, error) {
+// NewTipRankDividendMongo creates new stock mongo repo
+func NewTipRankDividendMongo(db *mongo.Database, log logger.ContextLog, conf *config.MongoConfig) (*TipRankDividendMongo, error) {
 	if db != nil {
-		return &StockMongo{
+		return &TipRankDividendMongo{
 			db:   db,
-			log:  l,
+			log:  log,
 			conf: conf,
 		}, nil
 	}
@@ -67,16 +66,16 @@ func NewStockMongo(db *mongo.Database, l logger.ContextLog, conf *config.MongoCo
 		return nil, err
 	}
 
-	return &StockMongo{
+	return &TipRankDividendMongo{
 		db:     client.Database(conf.Dbname),
 		client: client,
-		log:    l,
+		log:    log,
 		conf:   conf,
 	}, nil
 }
 
 // Close disconnect from database
-func (r *StockMongo) Close() {
+func (r *TipRankDividendMongo) Close() {
 	ctx := context.Background()
 	r.log.Info(ctx, "close mongo client")
 
@@ -93,42 +92,35 @@ func (r *StockMongo) Close() {
 // Implement interface
 ///////////////////////////////////////////////////////////////////////////////
 
-// InsertStock insert new stock stock
-func (r *StockMongo) InsertStock(ctx context.Context, stock *entities.Stock, countryCode string) error {
+// InsertTipRankDividend insert new Tiprank dividend
+func (r *TipRankDividendMongo) InsertTipRankDividend(ctx context.Context, tiprankDividend *entities.TipRankDividend) error {
 	// create new context for the query
 	ctx, cancel := createContext(ctx, r.conf.TimeoutMS)
 	defer cancel()
 
-	savedStock, err := r.findStockByTicker(ctx, stock.Ticker)
+	savedTipRankDividend, err := r.findTipRankDividendByTicker(ctx, tiprankDividend.Ticker)
 	if err != nil {
-		r.log.Error(ctx, "find stock by ticker failed", "error", err, "ticker", stock.Ticker)
+		r.log.Error(ctx, "find stock by ticker failed", "error", err, "ticker", tiprankDividend.Ticker)
 		return err
 	}
 
-	insertingStock, err := models.NewStockModel(stock, countryCode)
+	newTipRankDividend, err := models.NewTipRankDividendModel(ctx, r.log, tiprankDividend, r.conf.SchemaVersion)
 	if err != nil {
-		// ignore sector model error, it isn't crucial
-		var sectorErr *models.SectorModelError
-		if !errors.As(err, &sectorErr) {
-			r.log.Error(ctx, "create model failed", "error", err, "ticker", stock.Ticker)
-			return err
-		}
-
 		// log noncrucial error
-		r.log.Warn(ctx, "create model failed but ignored", "error", err, "ticker", stock.Ticker)
+		r.log.Warn(ctx, "create model failed but ignored", "error", err, "ticker", tiprankDividend.Ticker)
 	}
 
-	if savedStock != nil {
+	if savedTipRankDividend != nil {
 		// Copy dividend history from saved stock to inserting stock
-		for k, v := range savedStock.DividendHistory {
-			if _, f := insertingStock.DividendHistory[k]; !f {
-				insertingStock.DividendHistory[k] = v
+		for k, v := range savedTipRankDividend.DividendHistory {
+			if _, f := newTipRankDividend.DividendHistory[k]; !f {
+				newTipRankDividend.DividendHistory[k] = v
 			}
 		}
 	}
 
-	if err = r.insertStock(ctx, insertingStock); err != nil {
-		r.log.Error(ctx, "insert stock failed", "error", err, "ticker", stock.Ticker)
+	if err = r.insertTipRankDividend(ctx, newTipRankDividend); err != nil {
+		r.log.Error(ctx, "insert TipRank dividend failed", "error", err, "ticker", tiprankDividend.Ticker)
 		return err
 	}
 
@@ -139,63 +131,8 @@ func (r *StockMongo) InsertStock(ctx context.Context, stock *entities.Stock, cou
 // Implement helper function
 ///////////////////////////////////////////////////////////
 
-// createContext create a new context with timeout
-func createContext(ctx context.Context, t uint64) (context.Context, context.CancelFunc) {
-	timeout := time.Duration(t) * time.Millisecond
-	return context.WithTimeout(ctx, timeout*time.Millisecond)
-}
-
-// insertStock inserts new stock
-func (r *StockMongo) insertStock(ctx context.Context, m *models.StockModel) error {
-	if m == nil {
-		r.log.Error(ctx, "invalid param")
-		return fmt.Errorf("invalid param")
-	}
-
-	// what collection we are going to use
-	colname, ok := r.conf.Colnames[consts.TIPRANK_DIVIDEND_LIST_COLLECTION]
-	if !ok {
-		r.log.Error(ctx, "cannot find collection name")
-		return fmt.Errorf("cannot find collection name")
-	}
-	col := r.db.Collection(colname)
-
-	m.IsActive = true
-	m.Schema = r.conf.SchemaVersion
-	m.ModifiedAt = time.Now().UTC().Unix()
-
-	filter := bson.D{{
-		Key:   "ticker",
-		Value: m.Ticker,
-	}}
-
-	update := bson.D{
-		{
-			Key:   "$set",
-			Value: m,
-		},
-		{
-			Key: "$setOnInsert",
-			Value: bson.D{{
-				Key:   "createdAt",
-				Value: time.Now().UTC().Unix(),
-			}},
-		},
-	}
-
-	opts := options.Update().SetUpsert(true)
-
-	_, err := col.UpdateOne(ctx, filter, update, opts)
-	if err != nil {
-		r.log.Error(ctx, "update one failed", "error", err)
-		return err
-	}
-
-	return nil
-}
-
-// findStockByTicker finds stock of a given ticker
-func (r *StockMongo) findStockByTicker(ctx context.Context, ticker string) (*models.StockModel, error) {
+// findTipRankDividendByTicker finds TipRank dividend of a given ticker
+func (r *TipRankDividendMongo) findTipRankDividendByTicker(ctx context.Context, ticker string) (*models.TipRankDividendModel, error) {
 	// what collection we are going to use
 	colname, ok := r.conf.Colnames[consts.TIPRANK_DIVIDEND_LIST_COLLECTION]
 	if !ok {
@@ -215,11 +152,11 @@ func (r *StockMongo) findStockByTicker(ctx context.Context, ticker string) (*mod
 	// find options
 	findOptions := options.FindOne()
 
-	var stock models.StockModel
-	if err := col.FindOne(ctx, filter, findOptions).Decode(&stock); err != nil {
+	var tiprankDividendModel models.TipRankDividendModel
+	if err := col.FindOne(ctx, filter, findOptions).Decode(&tiprankDividendModel); err != nil {
 		// ErrNoDocuments means that the filter did not match any documents in the collection
 		if err == mongo.ErrNoDocuments {
-			r.log.Info(ctx, "stock not found", "ticker", ticker)
+			r.log.Info(ctx, "TipRank dividend not found", "ticker", ticker)
 			return nil, nil
 		}
 
@@ -227,5 +164,50 @@ func (r *StockMongo) findStockByTicker(ctx context.Context, ticker string) (*mod
 		return nil, err
 	}
 
-	return &stock, nil
+	return &tiprankDividendModel, nil
+}
+
+// insertTipRankDividend inserts TipRank dividend
+func (r *TipRankDividendMongo) insertTipRankDividend(ctx context.Context, tiprankDividendModel *models.TipRankDividendModel) error {
+	if tiprankDividendModel == nil {
+		r.log.Error(ctx, "invalid param")
+		return fmt.Errorf("invalid param")
+	}
+
+	// what collection we are going to use
+	colname, ok := r.conf.Colnames[consts.TIPRANK_DIVIDEND_LIST_COLLECTION]
+	if !ok {
+		r.log.Error(ctx, "cannot find collection name")
+		return fmt.Errorf("cannot find collection name")
+	}
+	col := r.db.Collection(colname)
+
+	filter := bson.D{{
+		Key:   "ticker",
+		Value: tiprankDividendModel.Ticker,
+	}}
+
+	update := bson.D{
+		{
+			Key:   "$set",
+			Value: tiprankDividendModel,
+		},
+		{
+			Key: "$setOnInsert",
+			Value: bson.D{{
+				Key:   "createdAt",
+				Value: time.Now().UTC().Unix(),
+			}},
+		},
+	}
+
+	opts := options.Update().SetUpsert(true)
+
+	_, err := col.UpdateOne(ctx, filter, update, opts)
+	if err != nil {
+		r.log.Error(ctx, "update one failed", "error", err)
+		return err
+	}
+
+	return nil
 }

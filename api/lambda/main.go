@@ -9,7 +9,7 @@ import (
 	"github.com/hthl85/aws-tiprank-dividend-scraper/config"
 	"github.com/hthl85/aws-tiprank-dividend-scraper/infrastructure/repositories/mongodb/repos"
 	"github.com/hthl85/aws-tiprank-dividend-scraper/infrastructure/scraper"
-	"github.com/hthl85/aws-tiprank-dividend-scraper/usecase/stock"
+	"github.com/hthl85/aws-tiprank-dividend-scraper/usecase/tiprank"
 )
 
 func main() {
@@ -29,17 +29,17 @@ func lambdaHandler(ctx context.Context) ([]string, error) {
 	defer zap.Close()
 
 	// create new repository
-	repo, err := repos.NewStockMongo(nil, zap, &appConf.Mongo)
+	tiprankDividendRepo, err := repos.NewTipRankDividendMongo(nil, zap, &appConf.Mongo)
 	if err != nil {
-		log.Fatal("create stock mongo repo failed")
+		log.Fatal("create TipRank dividend mongo failed")
 	}
-	defer repo.Close()
+	defer tiprankDividendRepo.Close()
 
 	// create new service
-	fs := stock.NewService(repo, zap)
+	tiprankDividendService := tiprank.NewService(tiprankDividendRepo, zap)
 
 	// create new scraper jobs
-	jobs := scraper.NewStockScraper(fs, zap)
+	jobs := scraper.NewTipRankDividendScraper(tiprankDividendService, zap)
 	jobs.StartDailyJob()
 
 	tickers := jobs.Close()

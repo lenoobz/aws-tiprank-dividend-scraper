@@ -1,7 +1,7 @@
 package entities
 
-// Stock represents a stock entity
-type Stock struct {
+// TipRankDividend struct
+type TipRankDividend struct {
 	Ticker         string  `json:"ticker,omitempty"`
 	Name           string  `json:"company,omitempty"`
 	Yield          float64 `json:"yield,omitempty"`

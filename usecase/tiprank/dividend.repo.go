@@ -1,4 +1,4 @@
-package stock
+package tiprank
 
 import (
 	"context"
@@ -16,7 +16,7 @@ type Reader interface {
 
 // Writer interface
 type Writer interface {
-	InsertStock(context.Context, *entities.Stock, string) error
+	InsertTipRankDividend(context.Context, *entities.TipRankDividend) error
 }
 
 // Repo interface
