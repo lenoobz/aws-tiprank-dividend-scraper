@@ -93,7 +93,7 @@ func (r *TipRankDividendMongo) Close() {
 ///////////////////////////////////////////////////////////////////////////////
 
 // InsertTipRankDividend insert new Tiprank dividend
-func (r *TipRankDividendMongo) InsertTipRankDividend(ctx context.Context, tiprankDividend *entities.TipRankDividend) error {
+func (r *TipRankDividendMongo) InsertTipRankDividend(ctx context.Context, tiprankDividend *entities.TipRankDividend, currency string) error {
 	// create new context for the query
 	ctx, cancel := createContext(ctx, r.conf.TimeoutMS)
 	defer cancel()
@@ -104,7 +104,7 @@ func (r *TipRankDividendMongo) InsertTipRankDividend(ctx context.Context, tipran
 		return err
 	}
 
-	newTipRankDividend, err := models.NewTipRankDividendModel(ctx, r.log, tiprankDividend, r.conf.SchemaVersion)
+	newTipRankDividend, err := models.NewTipRankDividendModel(ctx, r.log, tiprankDividend, currency, r.conf.SchemaVersion)
 	if err != nil {
 		// log noncrucial error
 		r.log.Warn(ctx, "create model failed but ignored", "error", err, "ticker", tiprankDividend.Ticker)

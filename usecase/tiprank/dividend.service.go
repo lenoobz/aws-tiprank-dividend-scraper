@@ -5,6 +5,7 @@ import (
 
 	logger "github.com/hthl85/aws-lambda-logger"
 	"github.com/hthl85/aws-tiprank-dividend-scraper/entities"
+	"github.com/hthl85/aws-tiprank-dividend-scraper/utils/currency"
 )
 
 // Service sector
@@ -22,7 +23,13 @@ func NewService(tiprankDividendRepo Repo, log logger.ContextLog) *Service {
 }
 
 // AddTipRankDividend add TipRank dividend
-func (s *Service) AddTipRankDividend(ctx context.Context, tiprankDividend *entities.TipRankDividend) error {
+func (s *Service) AddTipRankDividend(ctx context.Context, tiprankDividend *entities.TipRankDividend, country string) error {
 	s.log.Info(ctx, "adding TipRank dividend", "ticker", tiprankDividend.Ticker)
-	return s.tiprankDividendRepo.InsertTipRankDividend(ctx, tiprankDividend)
+
+	currency, err := currency.GetCountryCurrency(country)
+	if err != nil {
+		s.log.Error(ctx, "get country currency failed", "country", country)
+	}
+
+	return s.tiprankDividendRepo.InsertTipRankDividend(ctx, tiprankDividend, currency)
 }

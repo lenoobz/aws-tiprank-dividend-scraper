@@ -206,6 +206,8 @@ func (s *TipRankDividendScraper) processDividendResponse(r *colly.Response) {
 	// create correlation if for processing fund list
 	id, _ := uuid.NewRandom()
 	ctx := corid.NewContext(context.Background(), id)
+
+	countryCode := r.Request.Ctx.Get("country")
 	s.log.Info(ctx, "processDividendResponse")
 
 	var tiprankDividends []*entities.TipRankDividend
@@ -217,7 +219,7 @@ func (s *TipRankDividendScraper) processDividendResponse(r *colly.Response) {
 	}
 
 	for _, tiprankDividend := range tiprankDividends {
-		if err := s.tiprankDividendService.AddTipRankDividend(ctx, tiprankDividend); err != nil {
+		if err := s.tiprankDividendService.AddTipRankDividend(ctx, tiprankDividend, countryCode); err != nil {
 			s.log.Error(ctx, "add TipRank dividend failed", "error", err, "ticker", tiprankDividend.Ticker)
 		} else {
 			s.errorTickers = append(s.errorTickers, tiprankDividend.Ticker)

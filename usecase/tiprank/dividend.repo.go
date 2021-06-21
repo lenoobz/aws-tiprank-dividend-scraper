@@ -16,7 +16,7 @@ type Reader interface {
 
 // Writer interface
 type Writer interface {
-	InsertTipRankDividend(context.Context, *entities.TipRankDividend) error
+	InsertTipRankDividend(ctx context.Context, tiprankDividend *entities.TipRankDividend, currency string) error
 }
 
 // Repo interface
