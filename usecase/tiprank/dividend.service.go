@@ -3,9 +3,9 @@ package tiprank
 import (
 	"context"
 
-	logger "github.com/hthl85/aws-lambda-logger"
-	"github.com/hthl85/aws-tiprank-dividend-scraper/entities"
-	"github.com/hthl85/aws-tiprank-dividend-scraper/utils/currency"
+	logger "github.com/lenoobz/aws-lambda-logger"
+	"github.com/lenoobz/aws-tiprank-dividend-scraper/entities"
+	"github.com/lenoobz/aws-tiprank-dividend-scraper/utils/currency"
 )
 
 // Service sector

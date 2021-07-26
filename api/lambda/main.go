@@ -5,11 +5,11 @@ import (
 	"log"
 
 	"github.com/aws/aws-lambda-go/lambda"
-	logger "github.com/hthl85/aws-lambda-logger"
-	"github.com/hthl85/aws-tiprank-dividend-scraper/config"
-	"github.com/hthl85/aws-tiprank-dividend-scraper/infrastructure/repositories/mongodb/repos"
-	"github.com/hthl85/aws-tiprank-dividend-scraper/infrastructure/scraper"
-	"github.com/hthl85/aws-tiprank-dividend-scraper/usecase/tiprank"
+	logger "github.com/lenoobz/aws-lambda-logger"
+	"github.com/lenoobz/aws-tiprank-dividend-scraper/config"
+	"github.com/lenoobz/aws-tiprank-dividend-scraper/infrastructure/repositories/mongodb/repos"
+	"github.com/lenoobz/aws-tiprank-dividend-scraper/infrastructure/scraper"
+	"github.com/lenoobz/aws-tiprank-dividend-scraper/usecase/tiprank"
 )
 
 func main() {

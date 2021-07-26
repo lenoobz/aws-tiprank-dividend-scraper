@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
-	logger "github.com/hthl85/aws-lambda-logger"
-	"github.com/hthl85/aws-tiprank-dividend-scraper/entities"
-	"github.com/hthl85/aws-tiprank-dividend-scraper/utils/datetime"
+	logger "github.com/lenoobz/aws-lambda-logger"
+	"github.com/lenoobz/aws-tiprank-dividend-scraper/entities"
+	"github.com/lenoobz/aws-tiprank-dividend-scraper/utils/datetime"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 

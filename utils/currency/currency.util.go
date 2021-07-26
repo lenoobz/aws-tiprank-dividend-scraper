@@ -3,7 +3,7 @@ package currency
 import (
 	"fmt"
 
-	"github.com/hthl85/aws-tiprank-dividend-scraper/consts"
+	"github.com/lenoobz/aws-tiprank-dividend-scraper/consts"
 )
 
 // GetCountryCurrency gets currency code of a given country name

@@ -8,12 +8,12 @@ import (
 	"github.com/gocolly/colly"
 	"github.com/gocolly/colly/extensions"
 	"github.com/google/uuid"
-	corid "github.com/hthl85/aws-lambda-corid"
-	logger "github.com/hthl85/aws-lambda-logger"
-	"github.com/hthl85/aws-tiprank-dividend-scraper/config"
-	"github.com/hthl85/aws-tiprank-dividend-scraper/consts"
-	"github.com/hthl85/aws-tiprank-dividend-scraper/entities"
-	"github.com/hthl85/aws-tiprank-dividend-scraper/usecase/tiprank"
+	corid "github.com/lenoobz/aws-lambda-corid"
+	logger "github.com/lenoobz/aws-lambda-logger"
+	"github.com/lenoobz/aws-tiprank-dividend-scraper/config"
+	"github.com/lenoobz/aws-tiprank-dividend-scraper/consts"
+	"github.com/lenoobz/aws-tiprank-dividend-scraper/entities"
+	"github.com/lenoobz/aws-tiprank-dividend-scraper/usecase/tiprank"
 )
 
 // TipRankDividendScraper struct

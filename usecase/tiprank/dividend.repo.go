@@ -3,7 +3,7 @@ package tiprank
 import (
 	"context"
 
-	"github.com/hthl85/aws-tiprank-dividend-scraper/entities"
+	"github.com/lenoobz/aws-tiprank-dividend-scraper/entities"
 )
 
 ///////////////////////////////////////////////////////////
