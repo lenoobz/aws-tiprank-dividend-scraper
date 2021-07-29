@@ -20,6 +20,7 @@ type TipRankDividendModel struct {
 	Ticker          string                          `bson:"ticker,omitempty"`
 	Name            string                          `bson:"name,omitempty"`
 	Yield           float64                         `bson:"yield,omitempty"`
+	Amount          float64                         `bson:"amount,omitempty"`
 	Currency        string                          `bson:"currency,omitempty"`
 	DividendHistory map[int64]*DividendHistoryModel `bson:"dividendHistory,omitempty"`
 }
@@ -42,6 +43,7 @@ func NewTipRankDividendModel(ctx context.Context, log logger.ContextLog, tiprank
 		Ticker:          tiprankDividend.Ticker,
 		Name:            tiprankDividend.Name,
 		Yield:           tiprankDividend.Yield,
+		Amount:          tiprankDividend.Amount,
 		Currency:        currency,
 		DividendHistory: map[int64]*DividendHistoryModel{},
 	}
