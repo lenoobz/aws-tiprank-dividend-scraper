@@ -22,6 +22,7 @@ type TipRankDividendScraper struct {
 	tiprankDividendService   *tiprank.Service
 	log                      logger.ContextLog
 	errorTickers             []string
+	scrapedTickers           []string
 }
 
 // NewTipRankDividendScraper create new TipRank dividend scraper
@@ -221,14 +222,15 @@ func (s *TipRankDividendScraper) processDividendResponse(r *colly.Response) {
 	for _, tiprankDividend := range tiprankDividends {
 		if err := s.tiprankDividendService.AddTipRankDividend(ctx, tiprankDividend, countryCode); err != nil {
 			s.log.Error(ctx, "add TipRank dividend failed", "error", err, "ticker", tiprankDividend.Ticker)
-		} else {
 			s.errorTickers = append(s.errorTickers, tiprankDividend.Ticker)
+		} else {
+			s.scrapedTickers = append(s.scrapedTickers, tiprankDividend.Ticker)
 		}
 	}
 }
 
 // Close scraper
 func (s *TipRankDividendScraper) Close() []string {
-	s.log.Info(context.Background(), "DONE - SCRAPING TIPRANK DIVIDENDS", "tickers", s.errorTickers)
-	return s.errorTickers
+	s.log.Info(context.Background(), "DONE - SCRAPING TIPRANK DIVIDENDS", "errorTickers", s.errorTickers)
+	return s.scrapedTickers
 }
